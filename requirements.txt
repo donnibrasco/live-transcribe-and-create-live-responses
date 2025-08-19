@@ -1,0 +1,7 @@
+openai>=1.30.0
+sounddevice>=0.4.6
+numpy>=1.24.0
+scipy>=1.10.0
+# Whisper speech-to-text (uses PyTorch; see README for Windows install notes)
+openai-whisper==20231117
+faster-whisper>=1.0.0
