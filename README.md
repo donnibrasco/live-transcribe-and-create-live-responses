@@ -1,85 +1,123 @@
-# Live Transcribe + AI Audience Questions
+# Live Transcription with Client-Server Architecture
 
-Real-time speech-to-text using Whisper, plus an AI that generates short viewer-style questions from the transcript and writes them to a chat overlay JSON file.
+This setup separates audio recording (macOS client) from AI processing (Linux server).
 
-## Features
-- Microphone capture via `sounddevice`
-- Whisper transcription (`openai-whisper`)
-- Optional OpenAI call to generate a concise audience question from each transcript
-- Throttled background worker so audio is never blocked
-- Windows-friendly chat overlay path via env var
+## Architecture
+- **macOS Client**: Records microphone → sends audio to server
+- **Linux Server**: Receives audio → OpenAI transcription → OpenAI response → serves HTML overlay  
+- **OBS**: Points to server URL for live overlay display
 
-## Requirements
-- Python 3.9+
-- A working microphone device
-- For AI questions: an OpenAI API key with access to your chosen model
+## Quick Setup
 
-Install deps:
+### 1. Linux Server Setup
 
-```powershell
-pip install -r requirements.txt
+```bash
+# Install dependencies
+pip install -r server_requirements.txt
+
+# Set OpenAI API key
+export OPENAI_API_KEY="your-api-key-here"
+
+# Optional: customize models
+export OPENAI_MODEL="gpt-4o-mini"          # Chat model
+export OPENAI_STT_MODEL="whisper-1"        # Speech-to-text model
+
+# Start server (port 8080)
+python transcription_server.py
 ```
 
-> Whisper requires PyTorch. On Windows, if you hit issues, install a matching PyTorch build for your Python/CPU/GPU from https://pytorch.org/ first, then reinstall `openai-whisper`. Alternatively, use `faster-whisper` which works well on Python 3.13 and doesn’t require Torch.
+The server will be available at `http://YOUR_SERVER_IP:8080`
 
-Python version note (Windows):
-- If you want openai-whisper (Torch): prefer Python 3.10–3.12. Python 3.13 may lack wheels.
-- If you’re on Python 3.13: use the fallback backend `faster-whisper`.
+### 2. macOS Client Setup
 
-Quick sanity test without Torch/Whisper:
+```bash
+# Install dependencies
+pip install -r client_requirements.txt
 
-```powershell
-python ".\whisper_ai_stream_questions.py" --dry-run --diagnose
+# Configure server URL
+export TRANSCRIBE_SERVER="http://YOUR_SERVER_IP:8080"
+
+# Start audio client
+python audio_client.py
 ```
 
-This runs the full pipeline without loading Whisper (no Torch needed) and prints OpenAI diagnostics.
+### 3. OBS Browser Source
 
-## Configure (Windows PowerShell)
+Add a Browser Source in OBS with:
+- **URL**: `http://YOUR_SERVER_IP:8080/overlay`
+- **Width**: 800
+- **Height**: 600
 
-```powershell
-# Optional: where to save chat overlay
-$env:CHAT_FILE_PATH = "C:\Users\Say10\Downloads\chat_messages.json"
+## How It Works
 
-# Enable AI questions (optional). If not set, the app falls back to canned responses.
-$env:OPENAI_API_KEY = "<your_api_key>"
+1. **Audio Recording**: macOS client records 5-second audio chunks from your microphone
+2. **Audio Transfer**: Client sends WAV audio to server via HTTP POST
+3. **Transcription**: Server uses OpenAI Whisper to convert speech to text
+4. **AI Response**: Server generates conversational AI response using GPT model
+5. **Overlay Update**: Server updates the live HTML overlay with the latest response
+6. **Display**: OBS shows the overlay URL with real-time AI responses
 
-# Select the model (non-GPT5). Default is a fast, inexpensive model:
-$env:OPENAI_MODEL = "gpt-4o-mini"  # or another available non-GPT5 model
+## Configuration Options
+
+### Client Options
+```bash
+# Use specific audio device
+python audio_client.py --device 1
+
+# Adjust recording duration
+python audio_client.py --duration 3.0
+
+# Change server URL
+python audio_client.py --server "http://192.168.1.50:8080"
 ```
 
-If your account doesn’t have access to the selected model, the script logs a warning and uses canned responses.
-
-Security: Do not hardcode API keys in source. Prefer environment variables.
-
-## Run
-
-```powershell
-python ".\whisper_live_robust.py"
-# To force the faster-whisper backend:
-# python ".\whisper_live_robust.py" --backend faster
+### Server Environment Variables
+```bash
+export OPENAI_API_KEY="your-key"           # Required
+export OPENAI_MODEL="gpt-4o-mini"          # Chat model
+export OPENAI_STT_MODEL="whisper-1"        # Speech model
 ```
 
-Cloud-only (no PyTorch, everything on OpenAI):
+## Endpoints
 
-```powershell
-# Requires: pip install openai sounddevice numpy
-$env:OPENAI_API_KEY = "<your_key>"
-python ".\openai_cloud_live.py" --seconds 5 --loop
-# Optional: pick device index
-# python ".\openai_cloud_live.py" --device 1 --seconds 5 --loop
+- `GET /overlay` - HTML overlay for OBS
+- `GET /api/latest` - Latest AI response (JSON)
+- `POST /api/process_audio` - Upload audio for processing
+- `GET /health` - Server health check
+
+## Files Structure
+
 ```
-
-It will try configured input device indices and start transcribing. Every ~5 seconds (cooldown), it will enqueue an AI request and append a single viewer-style question to the overlay JSON.
-
-## Tuning
-- `DEVICE_OPTIONS` in `whisper_live_robust.py`: order of preferred audio input devices.
-- `SAMPLE_RATE`, `CHUNK_DURATION`, `OVERLAP_DURATION`: audio pipeline parameters.
-- `ENQUEUE_COOLDOWN_SEC`: how often to generate a question (default 5s).
-- `--backend auto|whisper|faster`: choose which transcription engine to use (default auto).
+├── audio_client.py              # macOS microphone client
+├── transcription_server.py      # Linux server with OpenAI integration
+├── client_requirements.txt      # macOS dependencies
+├── server_requirements.txt      # Linux server dependencies
+└── README.md                   # This file
+```
 
 ## Troubleshooting
-- No AI output: ensure `openai` is installed, `OPENAI_API_KEY` is set, and your key has model access.
-- Audio device not found: update `DEVICE_OPTIONS` to match your system `sd.query_devices()`.
-- High CPU: use a smaller Whisper model (e.g., `tiny` or `base`).
-- PyTorch/Whisper import errors on Python 3.13: run with `--backend faster` to use `faster-whisper` instead of `openai-whisper`.
 
+### Audio Issues
+- Run `python -c "import sounddevice; print(sounddevice.query_devices())"` to list devices
+- Use `--device N` to specify device index
+- Check microphone permissions in System Preferences → Security & Privacy → Privacy → Microphone
+
+### Server Issues
+- Verify OpenAI API key: `curl http://YOUR_SERVER:8080/health`
+- Check firewall: ensure port 8080 is open
+- View logs in the server terminal
+
+### Network Issues
+- Test connectivity: `curl http://YOUR_SERVER:8080/health`
+- Ensure client and server are on same network or have routing configured
+
+### macOS-Specific Setup
+- Install Python 3.9+ via Homebrew: `brew install python`
+- You may need to install PortAudio: `brew install portaudio`
+- Grant microphone permissions when prompted
+
+## Security Notes
+
+- Server runs on all interfaces (0.0.0.0) - restrict as needed
+- OpenAI API key should be kept secure
+- Consider HTTPS for production use

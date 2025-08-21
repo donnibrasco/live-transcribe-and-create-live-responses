@@ -1,0 +1,5 @@
+# Client requirements (macOS)
+# Note: You may need to install PortAudio first: brew install portaudio
+sounddevice>=0.4.6
+numpy>=1.24.0
+requests>=2.31.0
