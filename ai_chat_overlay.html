@@ -10,7 +10,6 @@
       #feed { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 520px; max-width: 92vw; }
       .item { background: rgba(17, 17, 20, 0.88); color: #e8e8f0; border-radius: 12px; margin: 8px 0; padding: 10px 14px; display: flex; gap: 10px; align-items: center; box-shadow: 0 8px 30px rgba(0,0,0,.35); }
       .user { font-weight: 700; margin-right: 6px; }
-      .time { color: #9aa0a6; font-size: 12px; margin-left: auto; }
       .msg { white-space: pre-wrap; word-break: break-word; }
     </style>
   </head>
@@ -49,11 +48,67 @@
           el.innerHTML = `
             <span class="user" style="color:${userColor}">${escapeHtml(m.username || 'User')}</span>
             <span class="msg">${escapeHtml(m.message || '')}</span>
-            <span class="time">${escapeHtml(m.timestamp || '')}</span>
           `;
           FEED.prepend(el);
         }
       }
+
+      // Clear chat function
+      async function clearChat() {
+        try {
+          const response = await fetch('/api/clear_chat', { 
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          if (response.ok) {
+            FEED.innerHTML = '';
+            console.log('✅ Chat cleared via Cmd+O');
+          } else {
+            console.error('❌ Failed to clear chat');
+          }
+        } catch (error) {
+          console.error('❌ Error clearing chat:', error);
+        }
+      }
+
+      // Keyboard shortcut listener (works when page is focused)
+      document.addEventListener('keydown', function(event) {
+        // Multiple hotkey options for clearing chat
+        const isClearShortcut = (
+          // Cmd+O (macOS) or Ctrl+O (Windows/Linux)
+          ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'o') ||
+          // Cmd+Shift+C or Ctrl+Shift+C
+          ((event.metaKey || event.ctrlKey) && event.shiftKey && event.key.toLowerCase() === 'c') ||
+          // Cmd+L or Ctrl+L (common clear shortcut)
+          ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'l') ||
+          // F5 (refresh/clear)
+          (event.key === 'F5') ||
+          // Delete key
+          (event.key === 'Delete') ||
+          // Backspace key
+          (event.key === 'Backspace')
+        );
+        
+        if (isClearShortcut) {
+          event.preventDefault(); // Prevent default browser actions
+          clearChat();
+        }
+      });
+
+      // Show available shortcuts on page load
+      console.log('🎹 Chat Clear Shortcuts Available:');
+      console.log('   Cmd+O (macOS) / Ctrl+O: Clear chat');
+      console.log('   Cmd+Shift+C / Ctrl+Shift+C: Clear chat');
+      console.log('   Cmd+L / Ctrl+L: Clear chat');
+      console.log('   F5: Clear chat');
+      console.log('   Delete: Clear chat');
+      console.log('   Backspace: Clear chat');
+
+      // Auto-focus the page so hotkeys work immediately
+      window.addEventListener('load', function() {
+        document.body.focus();
+        document.body.setAttribute('tabindex', '0');
+      });
 
       poll();
     </script>

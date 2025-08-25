@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>AI Chat Overlay</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+      /* Transparent background so OBS can layer it */
+      html, body { margin: 0; padding: 0; background: transparent; font-family: Inter, Segoe UI, system-ui, -apple-system, Roboto, Arial, sans-serif; }
+      #feed { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 520px; max-width: 92vw; }
+      .item { background: rgba(17, 17, 20, 0.88); color: #e8e8f0; border-radius: 12px; margin: 8px 0; padding: 10px 14px; display: flex; gap: 10px; align-items: center; box-shadow: 0 8px 30px rgba(0,0,0,.35); }
+      .user { font-weight: 700; margin-right: 6px; }
+      .msg { white-space: pre-wrap; word-break: break-word; }
+    </style>
+  </head>
+  <body>
+    <div id="feed"></div>
+
+    <script>
+      const FEED = document.getElementById('feed');
+      const SRC = 'chat_messages.json'; // same folder as this file
+      const MAX_ITEMS = 12;             // number of rows to show
+      const POLL_MS = 1000;             // fetch interval
+
+      function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c])); }
+
+      async function poll(){
+        try {
+          const res = await fetch(SRC, { cache: 'no-store' });
+          if(!res.ok) throw new Error('HTTP '+res.status);
+          const data = await res.json();
+          render(Array.isArray(data) ? data : []);
+        } catch(e) {
+          // First load may 404 until the file exists—keep polling quietly
+        } finally {
+          setTimeout(poll, POLL_MS);
+        }
+      }
+
+      function render(items){
+        FEED.innerHTML = '';
+        const last = items.slice(-MAX_ITEMS);
+        for (let i = last.length - 1; i >= 0; i--) {
+          const m = last[i] || {};
+          const el = document.createElement('div');
+          el.className = 'item';
+          const userColor = (m.color || '#a3a6ff');
+          el.innerHTML = `
+            <span class="user" style="color:${userColor}">${escapeHtml(m.username || 'User')}</span>
+            <span class="msg">${escapeHtml(m.message || '')}</span>
+          `;
+          FEED.prepend(el);
+        }
+      }
+
+      poll();
+    </script>
+  </body>
+</html>

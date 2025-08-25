@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Live Chat Overlay</title>
+		<style>
+			body { font-family: system-ui, sans-serif; background: #0f172a; color: #e2e8f0; margin: 0; }
+			header { padding: 16px; background: #020617; border-bottom: 1px solid #1e293b; }
+			.container { max-width: 720px; margin: 0 auto; padding: 16px; }
+			.msg { display: flex; gap: 8px; padding: 8px 12px; border-radius: 8px; background: #111827; margin-bottom: 8px; align-items: baseline; }
+			.username { font-weight: 600; }
+			.timestamp { color: #94a3b8; font-size: 12px; margin-left: auto; }
+			.dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 7px; }
+			footer { text-align: center; color: #94a3b8; font-size: 12px; padding: 16px; }
+		</style>
+	</head>
+	<body>
+		<header>
+			<div class="container">
+				<h1 style="margin:0;font-size:18px">Live Transcribe + AI Questions</h1>
+			</div>
+		</header>
+		<div class="container">
+			<div id="list"></div>
+		</div>
+		<footer>
+			Served by FastAPI. Endpoint: /api/chat
+		</footer>
+		<script>
+			async function load() {
+				try {
+					const res = await fetch('/api/chat', { cache: 'no-store' });
+					const data = await res.json();
+					const list = document.getElementById('list');
+					list.innerHTML = '';
+					(data || []).forEach(item => {
+						const div = document.createElement('div');
+						div.className = 'msg';
+						const color = item.color || '#55EFC4';
+						div.innerHTML = `
+							<div class="dot" style="background:${color}"></div>
+							<div class="username" style="color:${color}">${item.username || 'User'}</div>
+							<div class="message">${(item.message || '').replace(/[<>]/g, '')}</div>
+							<div class="timestamp">${item.timestamp || ''}</div>
+						`;
+						list.appendChild(div);
+					});
+				} catch (e) {
+					console.error(e);
+				}
+			}
+
+			load();
+			setInterval(load, 2000);
+		</script>
+	</body>
+	</html>
+		</script>
+	</body>
+	</html>

@@ -143,9 +143,8 @@ def main():
     ap.add_argument("--no-ai", action="store_true", help="Skip generating a viewer question; only print transcript")
     args = ap.parse_args()
 
-    # Hardcoded key preferred; leave empty to use env var instead
-    OPENAI_STATIC_API_KEY = "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"
-    api_key = OPENAI_STATIC_API_KEY.strip() or os.getenv("OPENAI_API_KEY")
+    # Use environment variable for security
+    api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
         raise SystemExit("Set OPENAI_API_KEY in file or environment to use OpenAI APIs.")
 
