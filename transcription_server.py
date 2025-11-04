@@ -2,6 +2,7 @@
 Server that receives audio from clients, processes with OpenAI, and serves HTML overlay
 """
 import os
+from dotenv import load_dotenv
 import io
 import json
 import tempfile
@@ -28,10 +29,10 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from openai import OpenAI
 
-# Configuration
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "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")
+load_dotenv()
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
-    raise ValueError("OPENAI_API_KEY environment variable is required")
+    raise ValueError("OPENAI_API_KEY environment variable is required. Please set it in a .env file or your environment.")
 
 OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
 OPENAI_STT_MODEL = os.environ.get("OPENAI_STT_MODEL", "whisper-1")
@@ -845,6 +846,6 @@ if __name__ == "__main__":
     uvicorn.run(
         app,
         host="0.0.0.0",
-        port=8080,
+        port=8000,
         log_level="info"
     )

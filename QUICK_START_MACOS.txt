@@ -1,0 +1,88 @@
+╔═══════════════════════════════════════════════════════════════╗
+║        🍎 macOS CLIENT - QUICK START GUIDE                    ║
+╚═══════════════════════════════════════════════════════════════╝
+
+SERVER INFO:
+  URL: http://65.109.187.67:8000
+  Overlay: http://65.109.187.67:8000/overlay
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📦 STEP 1: INSTALL DEPENDENCIES
+  
+  # Install PortAudio (required for microphone)
+  brew install portaudio
+  
+  # Install Python packages
+  pip3 install sounddevice numpy requests
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎤 STEP 2: RUN CLIENT
+
+  # Simple command (just copy and paste this!)
+  python3 audio_client.py --server http://65.109.187.67:8000
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💬 STEP 3: VIEW OVERLAY
+
+  Open in browser: http://65.109.187.67:8000/overlay
+  
+  Or add to OBS Browser Source:
+  - URL: http://65.109.187.67:8000/overlay
+    - Width: 800
+    - Height: 600
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚙️ COMMON OPTIONS:
+
+  # Specify audio device
+  python3 audio_client.py --server http://65.109.187.67:8000 --device 1
+  
+  # Change recording duration
+  python3 audio_client.py --server http://65.109.187.67:8000 --duration 3
+  
+  # List available audio devices
+  python3 -c "import sounddevice; print(sounddevice.query_devices())"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔧 TROUBLESHOOTING:
+
+  Problem: "No audio devices found"
+  Solution: System Preferences → Security & Privacy → Privacy 
+            → Microphone → Enable Terminal
+
+  Problem: "Module not found"
+  Solution: brew install portaudio && pip3 install sounddevice
+
+  Problem: "Cannot connect to server"
+  Solution: Test with: curl http://65.109.187.67:8000/health
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎮 ADVANCED: UNIFIED CLIENT (with hotkeys)
+
+  python3 unified_macos_client.py --server http://65.109.187.67:8000
+  
+  Hotkeys:
+    Cmd+Shift+C → Clear chat
+    Cmd+Ctrl+C → Stop recording
+    Esc → Quit
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ QUICK TEST:
+
+  1. curl http://65.109.187.67:8000/health
+  2. python3 audio_client.py --server http://65.109.187.67:8000
+  3. Speak into microphone
+  4. Open http://65.109.187.67:8000/overlay in browser
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Need help? Check MACOS_CLIENT_SETUP.md for detailed instructions
+
+╚═══════════════════════════════════════════════════════════════╝

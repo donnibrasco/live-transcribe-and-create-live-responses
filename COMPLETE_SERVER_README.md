@@ -128,7 +128,7 @@ cat monitor.log
 
 ### **Remote Restart Failing:**
 ```bash
-curl http://5.161.143.194:8081/health
+curl http://5.161.143.194:8001/health
 python3 client_restart.py 5.161.143.194 --action status
 ```
 

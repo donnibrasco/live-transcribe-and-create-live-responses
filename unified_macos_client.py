@@ -269,7 +269,7 @@ class UnifiedClient:
         try:
             # Extract IP from server URL
             server_ip = self.server_url.replace('http://', '').replace('https://', '').split(':')[0]
-            restart_url = f"http://{server_ip}:8081/restart"
+            restart_url = f"http://{server_ip}:8001/restart"
             
             print("🔄 Attempting to restart server...")
             response = requests.post(restart_url, timeout=10)
@@ -326,7 +326,7 @@ class UnifiedClient:
 
 def main():
     parser = argparse.ArgumentParser(description="Unified macOS Client - Audio Recording + Chat Control")
-    parser.add_argument("--server", default="http://localhost:8080", help="Server URL (default: http://localhost:8080)")
+    parser.add_argument("--server", default="http://localhost:8000", help="Server URL (default: http://localhost:8000)")
     parser.add_argument("--device", type=int, help="Audio device ID (auto-detect if not specified)")
     parser.add_argument("--interval", type=float, default=0.5, help="Interval between recordings in seconds (default: 0.5)")
     

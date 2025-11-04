@@ -29,5 +29,5 @@ async def health():
     return {"status": "healthy", "service": "restart_endpoint"}
 
 if __name__ == "__main__":
-    print("🔄 Starting Remote Restart Service on port 8081...")
-    uvicorn.run(app, host="0.0.0.0", port=8081, log_level="warning")
+    print("🔄 Starting Remote Restart Service on port 8001...")
+    uvicorn.run(app, host="0.0.0.0", port=8001, log_level="warning")

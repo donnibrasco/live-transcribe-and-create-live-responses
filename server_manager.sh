@@ -10,7 +10,7 @@ RESTART_FLAG_FILE="$SCRIPT_DIR/.restart_requested"
 
 # Server configuration
 HOST="0.0.0.0"
-PORT="8080"
+PORT="8000"
 
 # Function to check if server is running
 is_server_running() {
@@ -175,8 +175,8 @@ async def health():
     return {"status": "healthy", "service": "restart_endpoint"}
 
 if __name__ == "__main__":
-    print("🔄 Starting Remote Restart Service on port 8081...")
-    uvicorn.run(app, host="0.0.0.0", port=8081, log_level="warning")
+    print("🔄 Starting Remote Restart Service on port 8001...")
+    uvicorn.run(app, host="0.0.0.0", port=8001, log_level="warning")
 EOF
     
     chmod +x "$SCRIPT_DIR/restart_server.py"
@@ -212,8 +212,8 @@ case "${1:-}" in
         echo "  ./server_manager.sh monitor   - Auto-restart monitoring"
         echo "  ./server_manager.sh daemon    - Run as background daemon"
         echo ""
-        echo "🌐 Remote restart URL (for clients):"
-        echo "  curl -X POST http://YOUR_SERVER_IP:8081/restart"
+    echo "🌐 Remote restart URL (for clients):"
+    echo "  curl -X POST http://YOUR_SERVER_IP:8001/restart"
         ;;
     "daemon")
         echo "🔧 Starting as background daemon..."

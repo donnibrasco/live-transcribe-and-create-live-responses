@@ -103,12 +103,12 @@ export OPENAI_STT_MODEL="whisper-1"        # Speech model
 - Check microphone permissions in System Preferences → Security & Privacy → Privacy → Microphone
 
 ### Server Issues
-- Verify OpenAI API key: `curl http://YOUR_SERVER:8080/health`
-- Check firewall: ensure port 8080 is open
+- Verify OpenAI API key: `curl http://YOUR_SERVER:8000/health`
+- Check firewall: ensure port 8000 is open
 - View logs in the server terminal
 
 ### Network Issues
-- Test connectivity: `curl http://YOUR_SERVER:8080/health`
+- Test connectivity: `curl http://YOUR_SERVER:8000/health`
 - Ensure client and server are on same network or have routing configured
 
 ### macOS-Specific Setup

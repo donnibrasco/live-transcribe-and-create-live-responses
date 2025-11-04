@@ -103,8 +103,8 @@ def send_audio_to_server(server_url, audio_bytes):
 
 def main():
     parser = argparse.ArgumentParser(description="Audio client for live transcription")
-    parser.add_argument("--server", default=os.environ.get("TRANSCRIBE_SERVER", "http://192.168.1.100:8080"), 
-                       help="Server URL (default: $TRANSCRIBE_SERVER or http://192.168.1.100:8080)")
+    parser.add_argument("--server", default=os.environ.get("TRANSCRIBE_SERVER", "http://192.168.1.100:8000"), 
+                       help="Server URL (default: $TRANSCRIBE_SERVER or http://192.168.1.100:8000)")
     parser.add_argument("--device", type=int, help="Audio device index")
     parser.add_argument("--duration", type=float, default=CHUNK_DURATION, help="Recording duration per chunk")
     parser.add_argument("--interval", type=float, default=0.5, help="Pause between recordings")
