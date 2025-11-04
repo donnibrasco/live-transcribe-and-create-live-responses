@@ -1,4 +1,21 @@
-Traceback (most recent call last):
-  File "/root/live-transcribe-and-create-live-responses/transcription_server.py", line 35, in <module>
-    raise ValueError("OPENAI_API_KEY environment variable is required. Please set it in a .env file or your environment.")
-ValueError: OPENAI_API_KEY environment variable is required. Please set it in a .env file or your environment.
+🚀 Starting Live Transcription Server...
+🤖 OpenAI Model: gpt-4o-mini
+🎤 STT Model: whisper-1
+📱 Use /overlay for OBS Browser Source
+💬 Starting ambient chat system...
+🎹 Terminal keyboard control active:
+   Ctrl+L: Clear chat (standard terminal clear shortcut)
+   Type 'clear' + Enter: Clear chat
+   Type 'quit' + Enter: Exit server
+   Ctrl+C: Exit server
+⚠️ Terminal keyboard listener error: (25, 'Inappropriate ioctl for device')
+💡 Falling back to simple input method...
+🎹 Simple keyboard control active:
+   Type 'clear' and press Enter: Clear chat
+   Type 'quit' to exit server
+INFO:     Started server process [19693]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+ERROR:    [Errno 98] error while attempting to bind on address ('0.0.0.0', 8000): address already in use
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
